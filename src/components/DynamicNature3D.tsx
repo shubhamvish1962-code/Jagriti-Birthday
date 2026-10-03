@@ -263,79 +263,109 @@ export default function DynamicNature3D() {
       mouseRef.current.x += (mouseRef.current.targetX - mouseRef.current.x) * 0.06;
       mouseRef.current.y += (mouseRef.current.targetY - mouseRef.current.y) * 0.06;
 
-      // ── DYNAMIC 3D DESCENT DOWN THE PAGE ──
+      // ── DYNAMIC 3D DESCENT & WEAVING TRAJECTORY DOWN THE PAGE ──
       let targetX = 0;
       let targetY = 0;
       let targetZ = 0;
       let targetScale = 1;
+      let bloomSpread = 0.5; // Petal opening ratio
+
+      // Downward velocity inertia: when scrolling fast, object dips downward
+      const velocityDip = -Math.min(scrollVelocityRef.current * 0.45, 1.5);
+      const velocityRoll = scrollVelocityRef.current * 0.25;
 
       if (!isMobile) {
-        // Continuous, fluid sinusoidal sweep down the screen
-        const pathAngle = p * Math.PI * 4;
-        const waveX = Math.sin(pathAngle) * 3.0;
+        // Continuous S-curve descent path matching the alternating chapter cards
+        // p goes from 0 (Hero) to 1 (Finale)
+        const chapterWave = Math.sin(p * Math.PI * 7); // Alternates left-right per chapter
+        const verticalDrift = Math.cos(p * Math.PI * 3.5) * 0.75;
 
-        if (p < 0.1) {
-          // Hero rest position
-          targetX = THREE.MathUtils.lerp(2.5, waveX, p / 0.1);
-          targetY = 0.2;
-          targetScale = 1.05;
+        if (p < 0.08) {
+          // Hero rest position: floats gracefully on the right
+          const t = p / 0.08;
+          targetX = THREE.MathUtils.lerp(2.8, 3.2, t);
+          targetY = THREE.MathUtils.lerp(0.3, -0.2, t) + velocityDip;
+          targetZ = 0.6;
+          targetScale = 1.15;
+          bloomSpread = 0.4;
         } else if (p > 0.88) {
-          // Finale center position
+          // Grand Finale: rises proudly above the birthday cake in the center
           const finT = (p - 0.88) / 0.12;
-          targetX = THREE.MathUtils.lerp(waveX, 0, finT);
-          targetY = THREE.MathUtils.lerp(-0.2, 1.8, finT);
-          targetScale = THREE.MathUtils.lerp(0.95, 1.25, finT);
+          targetX = THREE.MathUtils.lerp(chapterWave * 2.8, 0, finT);
+          targetY = THREE.MathUtils.lerp(verticalDrift + velocityDip, 2.1, finT);
+          targetZ = THREE.MathUtils.lerp(0, 1.2, finT);
+          targetScale = THREE.MathUtils.lerp(1.0, 1.35, finT);
+          bloomSpread = THREE.MathUtils.lerp(0.6, 1.2, finT); // Fully blooming!
         } else {
-          // Navigating down through chapters
-          targetX = waveX;
-          targetY = Math.cos(p * Math.PI * 2) * 0.45;
-          targetScale = 0.95;
+          // Navigating down through chapters: weaves left and right, swooping downward
+          targetX = chapterWave * 3.2;
+          targetY = verticalDrift + velocityDip;
+          targetZ = Math.sin(p * Math.PI * 6) * 0.8;
+          targetScale = 1.0 + Math.sin(p * Math.PI * 4) * 0.15;
+          bloomSpread = 0.5 + Math.sin(p * Math.PI * 5) * 0.25;
         }
       } else {
-        // Phone / Mobile: elegantly centered at top
-        targetX = Math.sin(p * Math.PI * 2) * 0.4;
-        targetY = 2.0 - p * 0.6 + Math.sin(p * Math.PI * 3) * 0.25;
-        targetScale = 0.75 + Math.sin(p * Math.PI) * 0.12;
+        // Phone / Mobile: elegantly framed at the top-center, reacting to vertical scroll
+        const phoneBounce = Math.sin(p * Math.PI * 8) * 0.35;
+        targetX = Math.sin(p * Math.PI * 4) * 0.65;
+        targetY = 1.8 + phoneBounce + velocityDip;
+        targetZ = 0.2;
+        targetScale = 0.82 + Math.sin(p * Math.PI * 2) * 0.1;
+        bloomSpread = 0.45 + p * 0.35;
       }
 
-      // Smooth interpolation for position
-      rootGroup.position.x = THREE.MathUtils.lerp(rootGroup.position.x, targetX + mouseRef.current.x * 0.4, 0.06);
-      rootGroup.position.y = THREE.MathUtils.lerp(rootGroup.position.y, targetY + mouseRef.current.y * 0.3, 0.06);
-      rootGroup.position.z = THREE.MathUtils.lerp(rootGroup.position.z, targetZ, 0.06);
+      // Smooth interpolation for position with snappy responsiveness
+      rootGroup.position.x = THREE.MathUtils.lerp(rootGroup.position.x, targetX + mouseRef.current.x * 0.45, 0.08);
+      rootGroup.position.y = THREE.MathUtils.lerp(rootGroup.position.y, targetY + mouseRef.current.y * 0.35, 0.08);
+      rootGroup.position.z = THREE.MathUtils.lerp(rootGroup.position.z, targetZ, 0.08);
 
-      const s = THREE.MathUtils.lerp(rootGroup.scale.x, targetScale, 0.06);
+      const s = THREE.MathUtils.lerp(rootGroup.scale.x, targetScale, 0.08);
       rootGroup.scale.set(s, s, s);
 
       // ── ROTATIONS & LIVING BREATHING ANIMATION ──
-      const scrollSpin = p * Math.PI * 4 + scrollVelocityRef.current * 0.35;
-      rootGroup.rotation.y = elapsed * 0.35 + scrollSpin + mouseRef.current.x * 0.3;
-      rootGroup.rotation.x = Math.sin(elapsed * 0.4) * 0.2 + mouseRef.current.y * 0.25;
+      const scrollSpin = p * Math.PI * 6 + scrollVelocityRef.current * 0.6;
+      rootGroup.rotation.y = elapsed * 0.4 + scrollSpin + mouseRef.current.x * 0.35;
+      rootGroup.rotation.x = Math.sin(elapsed * 0.5) * 0.18 + velocityRoll + mouseRef.current.y * 0.25;
+      rootGroup.rotation.z = Math.cos(elapsed * 0.4) * 0.12 + Math.sin(p * Math.PI * 4) * 0.15;
 
-      // Petals breathe in & out
-      const breathe = Math.sin(elapsed * 1.5) * 0.08;
-      petalGroup.rotation.y = -elapsed * 0.2;
-      petalGroup.scale.set(1 + breathe, 1 + breathe, 1 + breathe);
+      // Petals breathe and dynamically bloom open based on scroll progress
+      const breathe = Math.sin(elapsed * 1.8) * 0.06;
+      petalGroup.rotation.y = -elapsed * 0.25;
+      const currentBloom = 0.9 + breathe + bloomSpread * 0.3;
+      petalGroup.scale.set(currentBloom, currentBloom, currentBloom);
 
-      // Leaves sway gently
-      leafGroup.rotation.y = elapsed * 0.15;
+      // Leaves sway gently like in a warm monsoon breeze
+      leafGroup.rotation.y = elapsed * 0.2 + Math.sin(elapsed * 0.8) * 0.1;
+      const leafSway = 1.0 + Math.sin(elapsed * 1.2) * 0.04;
+      leafGroup.scale.set(leafSway, leafSway, leafSway);
 
-      // Firefly core pulses
-      fireflyMesh.rotation.y = elapsed * 0.8;
-      fireflyMesh.rotation.z = elapsed * 0.6;
+      // Firefly core pulses with warm glowing intensity
+      fireflyMesh.rotation.y = elapsed * 1.2;
+      fireflyMesh.rotation.z = elapsed * 0.9;
+      const pulse = 1 + Math.sin(elapsed * 4) * 0.15;
+      fireflyMesh.scale.set(pulse, pulse, pulse);
 
-      // Rings spin
-      haloRing.rotation.z = elapsed * 0.3 + scrollSpin * 0.8;
+      // Rings spin with celestial gyroscopic momentum
+      haloRing.rotation.z = elapsed * 0.35 + scrollSpin * 0.8;
+      haloRing.rotation.x = Math.PI * 0.45 + Math.sin(elapsed * 0.6) * 0.15;
 
-      // Orbiting dewdrops
+      // Orbiting dewdrops follow living harmonic orbits
       for (let i = 0; i < dews.length; i++) {
         const d = dews[i];
-        d.angle += d.speed;
+        d.angle += d.speed * (1 + scrollVelocityRef.current * 0.4);
         d.mesh.position.x = Math.cos(d.angle) * d.radius;
         d.mesh.position.z = Math.sin(d.angle) * d.radius;
-        d.mesh.position.y = d.yBase + Math.sin(elapsed * 2 + i) * 0.2;
+        d.mesh.position.y = d.yBase + Math.sin(elapsed * 2.2 + i * 1.1) * 0.35;
+        const dewPulse = 1 + Math.sin(elapsed * 3 + i) * 0.2;
+        d.mesh.scale.set(dewPulse, dewPulse, dewPulse);
       }
 
       lanternLight.position.copy(rootGroup.position);
+      pinkLight.position.set(
+        rootGroup.position.x + 3.5,
+        rootGroup.position.y + 2.5,
+        rootGroup.position.z + 4.0
+      );
 
       renderer.render(scene, camera);
     };

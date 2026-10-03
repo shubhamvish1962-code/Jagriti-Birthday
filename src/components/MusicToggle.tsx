@@ -7,7 +7,8 @@ export default function MusicToggle() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    const audio = new Audio('/tum-tak.mp3');
+    const basePath = process.env.NEXT_PUBLIC_BASE_PATH || (typeof window !== 'undefined' && window.location.pathname.startsWith('/Jagriti-Birthday') ? '/Jagriti-Birthday' : '');
+    const audio = new Audio(`${basePath}/tum-tak.mp3`);
     audio.loop = true;
     audio.volume = 0.45;
     audioRef.current = audio;
