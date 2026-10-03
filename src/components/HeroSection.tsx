@@ -130,7 +130,7 @@ export default function HeroSection() {
           ref={(el) => {
             badgesRef.current[i] = el;
           }}
-          className="hidden lg:block"
+          className="desktop-only-badge"
           style={{
             position: 'absolute',
             top: b.top,
@@ -250,6 +250,11 @@ export default function HeroSection() {
         <div ref={scrollBadgeRef} style={{ display: 'inline-block' }}>
           <a
             href="#ch1"
+            onClick={() => {
+              if (typeof window !== 'undefined') {
+                window.dispatchEvent(new Event('play-music'));
+              }
+            }}
             style={{
               display: 'inline-flex',
               flexDirection: 'column',

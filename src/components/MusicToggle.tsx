@@ -10,26 +10,43 @@ export default function MusicToggle() {
     const basePath = process.env.NEXT_PUBLIC_BASE_PATH || (typeof window !== 'undefined' && window.location.pathname.startsWith('/Jagriti-Birthday') ? '/Jagriti-Birthday' : '');
     const audio = new Audio(`${basePath}/tum-tak.mp3`);
     audio.loop = true;
-    audio.volume = 0.45;
+    audio.volume = 0.55;
     audioRef.current = audio;
 
-    // Browser policy: start on first user click anywhere if not yet playing
-    const handleFirstClick = () => {
-      if (audioRef.current && !playing) {
+    const startAudio = () => {
+      if (audioRef.current) {
         audioRef.current.play().then(() => {
           setPlaying(true);
-        }).catch(() => {});
+          cleanupListeners();
+        }).catch(() => {
+          // Will retry on next interaction
+        });
       }
-      window.removeEventListener('click', handleFirstClick);
-      window.removeEventListener('touchstart', handleFirstClick);
     };
 
-    window.addEventListener('click', handleFirstClick, { once: true });
-    window.addEventListener('touchstart', handleFirstClick, { once: true });
+    // 1. Attempt immediate autoplay on load
+    startAudio();
+
+    // 2. Fallback listeners for strict mobile browser autoplay policies
+    const events = ['touchstart', 'pointerdown', 'click', 'scroll', 'wheel', 'keydown', 'play-music'];
+    const onUserInteraction = () => {
+      startAudio();
+    };
+
+    const cleanupListeners = () => {
+      events.forEach((evt) => {
+        window.removeEventListener(evt, onUserInteraction);
+        document.removeEventListener(evt, onUserInteraction);
+      });
+    };
+
+    events.forEach((evt) => {
+      window.addEventListener(evt, onUserInteraction, { passive: true, once: true });
+      document.addEventListener(evt, onUserInteraction, { passive: true, once: true });
+    });
 
     return () => {
-      window.removeEventListener('click', handleFirstClick);
-      window.removeEventListener('touchstart', handleFirstClick);
+      cleanupListeners();
       audio.pause();
       audioRef.current = null;
     };

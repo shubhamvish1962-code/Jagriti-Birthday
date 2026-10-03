@@ -425,6 +425,45 @@ export default function ChapterSection({
             </div>
           </div>
 
+          {/* ── Scroll Reminder in Every Dialog Box ── */}
+          {(() => {
+            const nextId =
+              chapterNum === '01' ? '#ch2' :
+              chapterNum === '02' ? '#ch3' :
+              chapterNum === '03' ? '#ch4' :
+              chapterNum === '04' ? '#ch5' :
+              chapterNum === '05' ? '#ch6' :
+              chapterNum === '06' ? '#ch7' :
+              '#finale';
+
+            const nextLabel =
+              chapterNum === '01' ? 'Chapter 02 · Monsoon Rain' :
+              chapterNum === '02' ? 'Chapter 03 · Golden Heart' :
+              chapterNum === '03' ? 'Chapter 04 · Pure Pagalpan' :
+              chapterNum === '04' ? 'Chapter 05 · Strength & Softness' :
+              chapterNum === '05' ? 'Chapter 06 · Rain-Kissed Dreams' :
+              chapterNum === '06' ? 'Chapter 07 · Birthday Wish' :
+              'Grand Birthday Cake Finale 🎂';
+
+            return (
+              <div
+                style={{
+                  marginTop: '1.8rem',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  width: '100%',
+                }}
+              >
+                <a href={nextId} className="scroll-reminder">
+                  <span>Scroll down for {nextLabel}</span>
+                  <span style={{ animation: 'bounceY 1.2s infinite', display: 'inline-block', color: '#f472b6' }}>
+                    ↓
+                  </span>
+                </a>
+              </div>
+            );
+          })()}
+
           {/* Dewy bottom accent */}
           <div
             style={{

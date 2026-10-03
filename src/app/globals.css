@@ -309,6 +309,57 @@ body {
   to   { opacity: 1; transform: scale(1) rotate(0deg); }
 }
 
+/* ── Desktop Only Badges ── */
+.desktop-only-badge {
+  display: none !important;
+}
+
+@media (min-width: 1024px) {
+  .desktop-only-badge {
+    display: block !important;
+  }
+}
+
+/* ── Scroll Reminder ── */
+.scroll-reminder {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.4rem;
+  border-radius: 50px;
+  background: rgba(14, 26, 20, 0.7);
+  border: 1px solid rgba(244, 114, 182, 0.35);
+  backdrop-filter: blur(12px);
+  color: #fbcfe8;
+  font-size: clamp(0.72rem, 1.8vw, 0.8rem);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 600;
+  text-decoration: none;
+  animation: pulseGlow 2.4s ease-in-out infinite;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4), 0 0 12px rgba(244, 114, 182, 0.15);
+  transition: all 0.25s ease;
+}
+
+.scroll-reminder:hover {
+  border-color: #f472b6;
+  background: rgba(244, 114, 182, 0.18);
+  box-shadow: 0 6px 24px rgba(244, 114, 182, 0.35);
+  transform: translateY(-2px);
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4), 0 0 10px rgba(244, 114, 182, 0.15);
+    border-color: rgba(244, 114, 182, 0.35);
+  }
+  50% {
+    box-shadow: 0 4px 22px rgba(244, 114, 182, 0.4), 0 0 20px rgba(244, 114, 182, 0.3);
+    border-color: rgba(244, 114, 182, 0.7);
+  }
+}
+
 /* ── Mobile Responsive Polish ── */
 @media (max-width: 768px) {
   .music-toggle {
@@ -324,3 +375,4 @@ body {
   .cursor-ring, .cursor-dot, .cursor-trail { display: none !important; }
   .interlude-btn, .celebrate-btn, .music-toggle { cursor: pointer; }
 }
+

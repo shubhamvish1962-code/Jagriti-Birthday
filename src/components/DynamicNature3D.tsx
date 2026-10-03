@@ -200,7 +200,7 @@ export default function DynamicNature3D() {
     }
 
     // E. Orbiting Celestial Dew Ring with Baby Pink Hue
-    const haloRingGeo = new THREE.TorusGeometry(2.5, 0.035, 16, 100);
+    const haloRingGeo = new THREE.TorusGeometry(1.75, 0.03, 16, 80);
     const haloRingMat = new THREE.MeshStandardMaterial({
       color: 0xf472b6,
       emissive: 0xf472b6,
@@ -215,7 +215,7 @@ export default function DynamicNature3D() {
     // F. Orbiting Dewdrops
     const dewCount = 12;
     const dews: { mesh: THREE.Mesh; angle: number; speed: number; radius: number; yBase: number }[] = [];
-    const dewGeo = new THREE.OctahedronGeometry(0.12, 0);
+    const dewGeo = new THREE.OctahedronGeometry(0.1, 0);
     const dewMat = new THREE.MeshStandardMaterial({
       color: 0xfbcfe8,
       emissive: 0xf472b6,
@@ -229,8 +229,8 @@ export default function DynamicNature3D() {
         mesh: dewMesh,
         angle: (i / dewCount) * Math.PI * 2,
         speed: 0.02 + Math.random() * 0.015,
-        radius: 2.1 + Math.random() * 0.8,
-        yBase: (Math.random() - 0.5) * 0.8,
+        radius: 1.8 + Math.random() * 0.4,
+        yBase: (Math.random() - 0.5) * 0.6,
       });
     }
 
@@ -286,7 +286,7 @@ export default function DynamicNature3D() {
           targetX = THREE.MathUtils.lerp(2.8, 3.2, t);
           targetY = THREE.MathUtils.lerp(0.3, -0.2, t) + velocityDip;
           targetZ = 0.6;
-          targetScale = 1.15;
+          targetScale = 0.85;
           bloomSpread = 0.4;
         } else if (p > 0.88) {
           // Grand Finale: rises proudly above the birthday cake in the center
@@ -294,24 +294,44 @@ export default function DynamicNature3D() {
           targetX = THREE.MathUtils.lerp(chapterWave * 2.8, 0, finT);
           targetY = THREE.MathUtils.lerp(verticalDrift + velocityDip, 2.1, finT);
           targetZ = THREE.MathUtils.lerp(0, 1.2, finT);
-          targetScale = THREE.MathUtils.lerp(1.0, 1.35, finT);
+          targetScale = THREE.MathUtils.lerp(0.85, 1.15, finT);
           bloomSpread = THREE.MathUtils.lerp(0.6, 1.2, finT); // Fully blooming!
         } else {
           // Navigating down through chapters: weaves left and right, swooping downward
-          targetX = chapterWave * 3.2;
+          targetX = chapterWave * 3.4;
           targetY = verticalDrift + velocityDip;
           targetZ = Math.sin(p * Math.PI * 6) * 0.8;
-          targetScale = 1.0 + Math.sin(p * Math.PI * 4) * 0.15;
+          targetScale = 0.85 + Math.sin(p * Math.PI * 4) * 0.1;
           bloomSpread = 0.5 + Math.sin(p * Math.PI * 5) * 0.25;
         }
       } else {
-        // Phone / Mobile: elegantly framed at the top-center, reacting to vertical scroll
-        const phoneBounce = Math.sin(p * Math.PI * 8) * 0.35;
-        targetX = Math.sin(p * Math.PI * 4) * 0.65;
-        targetY = 1.8 + phoneBounce + velocityDip;
-        targetZ = 0.2;
-        targetScale = 0.82 + Math.sin(p * Math.PI * 2) * 0.1;
-        bloomSpread = 0.45 + p * 0.35;
+        // Phone / Mobile:
+        // Positioned at top canopy at Hero (y = 3.2), scale = 0.38, so it NEVER covers "Happy Birthday Jagriti"
+        if (p < 0.08) {
+          targetX = 0;
+          targetY = 3.2 + Math.sin(elapsed * 1.5) * 0.12;
+          targetZ = 0.2;
+          targetScale = 0.38;
+          bloomSpread = 0.4;
+        } else if (p > 0.88) {
+          // Grand Finale: sits gracefully above the cake in the center
+          const finT = (p - 0.88) / 0.12;
+          targetX = 0;
+          targetY = THREE.MathUtils.lerp(3.2, 2.3, finT);
+          targetZ = 0.4;
+          targetScale = THREE.MathUtils.lerp(0.36, 0.58, finT);
+          bloomSpread = 1.0;
+        } else {
+          // While scrolling through chapters on mobile:
+          // Keep it as an elegant floating companion near the top canopy
+          // scaled to 0.32 so it NEVER covers any dialog box or text!
+          const wave = Math.sin(p * Math.PI * 6);
+          targetX = wave * 1.25;
+          targetY = 3.3 + Math.cos(p * Math.PI * 4) * 0.2 + velocityDip * 0.4;
+          targetZ = 0.1;
+          targetScale = 0.32;
+          bloomSpread = 0.45;
+        }
       }
 
       // Smooth interpolation for position with snappy responsiveness

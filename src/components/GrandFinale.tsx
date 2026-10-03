@@ -3,6 +3,7 @@ import { useRef, useEffect, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import confetti from 'canvas-confetti';
+import AutoMailReply from './AutoMailReply';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -374,6 +375,9 @@ export default function GrandFinale() {
             </div>
           )}
         </div>
+
+        {/* ── Auto Mail Reply Feature for Jagriti ── */}
+        <AutoMailReply />
 
         {/* Footer Note */}
         <p
