@@ -111,6 +111,11 @@ export default function HeroSection() {
   return (
     <section
       ref={wrapRef}
+      onClick={() => {
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new Event('play-music'));
+        }
+      }}
       style={{
         position: 'relative',
         minHeight: '100vh',

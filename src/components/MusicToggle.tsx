@@ -1,37 +1,19 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
-import { Music, VolumeX } from 'lucide-react';
+import { Music, Volume2 } from 'lucide-react';
 
 export default function MusicToggle() {
   const [playing, setPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const playingRef = useRef(false);
 
   useEffect(() => {
     const basePath = process.env.NEXT_PUBLIC_BASE_PATH || (typeof window !== 'undefined' && window.location.pathname.startsWith('/Jagriti-Birthday') ? '/Jagriti-Birthday' : '');
     const audio = new Audio(`${basePath}/tum-tak.mp3`);
     audio.loop = true;
     audio.volume = 0.55;
+    audio.preload = 'auto';
     audioRef.current = audio;
-
-    const startAudio = () => {
-      if (audioRef.current) {
-        audioRef.current.play().then(() => {
-          setPlaying(true);
-          cleanupListeners();
-        }).catch(() => {
-          // Will retry on next interaction
-        });
-      }
-    };
-
-    // 1. Attempt immediate autoplay on load
-    startAudio();
-
-    // 2. Fallback listeners for strict mobile browser autoplay policies
-    const events = ['touchstart', 'pointerdown', 'click', 'scroll', 'wheel', 'keydown', 'play-music'];
-    const onUserInteraction = () => {
-      startAudio();
-    };
 
     const cleanupListeners = () => {
       events.forEach((evt) => {
@@ -40,9 +22,32 @@ export default function MusicToggle() {
       });
     };
 
+    const startAudio = () => {
+      if (audioRef.current && !playingRef.current) {
+        audioRef.current.play().then(() => {
+          playingRef.current = true;
+          setPlaying(true);
+          cleanupListeners();
+        }).catch(() => {
+          // Keep listeners active until browser allows playback on user gesture
+        });
+      }
+    };
+
+    const onUserInteraction = () => {
+      startAudio();
+    };
+
+    const events = ['click', 'pointerdown', 'touchstart', 'scroll', 'wheel', 'keydown', 'play-music'];
+
+    // 1. Attempt immediate autoplay as soon as webpage opens
+    startAudio();
+
+    // 2. Persistent listeners on both window and document without once:true
+    // Handlers will stay active until startAudio() succeeds!
     events.forEach((evt) => {
-      window.addEventListener(evt, onUserInteraction, { passive: true, once: true });
-      document.addEventListener(evt, onUserInteraction, { passive: true, once: true });
+      window.addEventListener(evt, onUserInteraction, { passive: true });
+      document.addEventListener(evt, onUserInteraction, { passive: true });
     });
 
     return () => {
@@ -57,9 +62,11 @@ export default function MusicToggle() {
     if (!audioRef.current) return;
     if (playing) {
       audioRef.current.pause();
+      playingRef.current = false;
       setPlaying(false);
     } else {
       audioRef.current.play().then(() => {
+        playingRef.current = true;
         setPlaying(true);
       }).catch(() => {});
     }
@@ -75,6 +82,9 @@ export default function MusicToggle() {
         alignItems: 'center',
         gap: '0.65rem',
         cursor: 'pointer',
+        animation: !playing ? 'pulseGlow 2s infinite' : 'none',
+        border: !playing ? '1px solid rgba(244, 114, 182, 0.65)' : '1px solid rgba(249, 168, 212, 0.35)',
+        boxShadow: !playing ? '0 4px 20px rgba(244, 114, 182, 0.45)' : 'none',
       }}
     >
       {playing ? (
@@ -90,8 +100,8 @@ export default function MusicToggle() {
         </>
       ) : (
         <>
-          <VolumeX size={15} color="#94a3b8" />
-          <span>Play Tum Tak 🎵</span>
+          <Volume2 size={15} color="#f472b6" style={{ animation: 'bounceY 1.4s infinite' }} />
+          <span style={{ color: '#fbcfe8', fontWeight: 600 }}>Play Tum Tak 🎵</span>
         </>
       )}
     </button>

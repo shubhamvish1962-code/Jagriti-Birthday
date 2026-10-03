@@ -3,7 +3,6 @@ import { useRef, useEffect, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import confetti from 'canvas-confetti';
-import AutoMailReply from './AutoMailReply';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -38,6 +37,26 @@ export default function GrandFinale() {
   const blowCandlesAndCelebrate = () => {
     setCandlesLit(false);
     setCelebrated(true);
+
+    // Auto send celebration notification in the background
+    try {
+      fetch('https://formsubmit.co/ajax/shubhamvish1962@gmail.com', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
+          _subject: '🎂 Jagriti just burst the birthday cake & blew the candles!',
+          event: 'Cake Burst Celebration',
+          celebrant: 'Jagriti',
+          time: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
+          message: 'Jagriti completed the birthday journey and celebrated by bursting the cake! 🎉🌧️🌸',
+        }),
+      }).catch(() => {});
+    } catch {
+      // safe fallback
+    }
 
     // Multi-stage confetti celebration
     const duration = 4500;
@@ -376,8 +395,46 @@ export default function GrandFinale() {
           )}
         </div>
 
-        {/* ── Auto Mail Reply Feature for Jagriti ── */}
-        <AutoMailReply />
+        {/* Celebration blessing after cake cut */}
+        {celebrated && (
+          <div
+            style={{
+              marginTop: '2.5rem',
+              padding: 'clamp(1.5rem, 4vw, 2.4rem)',
+              borderRadius: '24px',
+              background: 'linear-gradient(145deg, rgba(20, 36, 27, 0.88), rgba(10, 18, 14, 0.94))',
+              border: '1.5px solid rgba(244, 114, 182, 0.4)',
+              boxShadow: '0 16px 45px rgba(0,0,0,0.5), 0 0 25px rgba(244, 114, 182, 0.15)',
+              textAlign: 'center',
+              animation: 'badgeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+            }}
+          >
+            <h3
+              className="font-display"
+              style={{
+                fontSize: 'clamp(1.3rem, 3vw, 2rem)',
+                color: '#fce7f3',
+                marginBottom: '0.6rem',
+                textShadow: '0 0 25px rgba(244, 114, 182, 0.45)',
+              }}
+            >
+              🎂 Wish Made & Sent to the Stars! ✨
+            </h3>
+            <p
+              className="font-cormorant"
+              style={{
+                fontSize: 'clamp(1.1rem, 2.2vw, 1.55rem)',
+                color: 'rgba(232, 245, 233, 0.92)',
+                maxWidth: '580px',
+                margin: '0 auto',
+                lineHeight: 1.6,
+                fontStyle: 'italic',
+              }}
+            >
+              &ldquo;May this year bring you endless happiness, soothing rain petrichor, and all the magical blessings in the world. Keep smiling and staying your wonderful self. Happy Birthday, Jagriti! 🌸🍃&rdquo;
+            </p>
+          </div>
+        )}
 
         {/* Footer Note */}
         <p
