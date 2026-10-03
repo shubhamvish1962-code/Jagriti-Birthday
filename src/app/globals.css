@@ -1,0 +1,326 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap');
+@import "tailwindcss";
+
+:root {
+  /* 2D Rainy Greenery, Dark Clouds & Baby Pink Palette */
+  --bg-rain: #070c09;
+  --bg-dark-slate: #0c1511;
+  --cloud-charcoal: #151f1a;
+  --cloud-edge: #23332b;
+  
+  --green-deep: #0f2419;
+  --green-forest: #1b4332;
+  --green-emerald: #2d6a4f;
+  --green-leaf: #40916c;
+  --green-dew: #52b788;
+  --green-bright: #74c69d;
+  --green-mist: #b7e4c7;
+
+  /* Baby Pink Highlights */
+  --pink-blush: #fce7f3;
+  --pink-baby: #fbcfe8;
+  --pink-soft: #f9a8d4;
+  --pink-glow: #f472b6;
+  --pink-rose: #fb7185;
+
+  --water-cyan: #64dfdf;
+  --amber-lantern: #f59e0b;
+  --amber-glow: #fbbf24;
+
+  --glass-card-bg: rgba(14, 24, 18, 0.75);
+  --glass-card-border: rgba(249, 168, 212, 0.25);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: auto;
+  background: var(--bg-rain);
+  overflow-x: hidden;
+  width: 100%;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg-rain);
+  color: #fce7f3;
+  overflow-x: hidden;
+  width: 100%;
+  min-height: 100vh;
+  cursor: none;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-rain);
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--pink-soft), var(--green-bright));
+  border-radius: 4px;
+}
+
+/* ── Nature & Pink Rain Cursor ── */
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 36px;
+  height: 36px;
+  border: 1.5px solid rgba(249, 168, 212, 0.85);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: width 0.22s, height 0.22s, background 0.22s, border-color 0.22s;
+  box-shadow: 0 0 16px rgba(249, 168, 212, 0.4);
+}
+.cursor-ring.hovering {
+  width: 56px;
+  height: 56px;
+  background: rgba(249, 168, 212, 0.15);
+  border-color: var(--pink-glow);
+  box-shadow: 0 0 25px rgba(244, 114, 182, 0.6);
+}
+.cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 5px;
+  height: 5px;
+  background: var(--pink-soft);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 10000;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 10px var(--pink-glow);
+}
+.cursor-trail {
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+  animation: rainRippleTrail 0.75s ease-out forwards;
+}
+@keyframes rainRippleTrail {
+  0% {
+    opacity: 0.9;
+    transform: translate(-50%, -50%) scale(0.4);
+    border: 1.5px solid rgba(249, 168, 212, 0.9);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(3.2);
+    border: 1px solid rgba(116, 198, 157, 0);
+  }
+}
+
+/* ── Progress Bar ── */
+.progress-bar-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.04);
+}
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--green-leaf), var(--pink-soft), var(--amber-glow), var(--pink-glow));
+  box-shadow: 0 0 10px rgba(249, 168, 212, 0.8);
+}
+
+/* ── Frosted Leaf Glass Card ── */
+.glass-card {
+  position: relative;
+  background: linear-gradient(145deg, rgba(16, 26, 20, 0.8), rgba(9, 17, 13, 0.9));
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid rgba(249, 168, 212, 0.22);
+  border-radius: 28px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 35px rgba(249, 168, 212, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Wet leaf pink dew sheen overlay */
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 40% 30%, rgba(249, 168, 212, 0.06) 0%, transparent 65%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── Typography ── */
+.font-display   { font-family: 'Playfair Display', serif; }
+.font-cormorant { font-family: 'Cormorant Garamond', serif; }
+
+.gradient-text-blush {
+  background: linear-gradient(135deg, #fff0f5 0%, #fbcfe8 40%, #f9a8d4 70%, #74c69d 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.gradient-text-leaf {
+  background: linear-gradient(135deg, #fce7f3 0%, #f9a8d4 35%, #74c69d 75%, #52b788 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.gradient-text-amber {
+  background: linear-gradient(135deg, #fef08a 0%, #f9a8d4 50%, #fbbf24 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Marquee ── */
+.marquee-track {
+  display: flex;
+  gap: 3.5rem;
+  white-space: nowrap;
+  animation: marqueeScroll 24s linear infinite;
+  will-change: transform;
+}
+@keyframes marqueeScroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.marquee-container {
+  overflow: hidden;
+  padding: 1.4rem 0;
+  border-top: 1px solid rgba(249, 168, 212, 0.15);
+  border-bottom: 1px solid rgba(249, 168, 212, 0.15);
+  background: rgba(12, 20, 15, 0.6);
+  backdrop-filter: blur(12px);
+}
+
+/* ── Interlude Button ── */
+.interlude-btn {
+  padding: 0.85rem 1.8rem;
+  border-radius: 50px;
+  border: 1px solid rgba(249, 168, 212, 0.35);
+  background: rgba(18, 30, 24, 0.78);
+  color: #fce7f3;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  cursor: none;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+.interlude-btn:hover {
+  background: rgba(249, 168, 212, 0.2);
+  border-color: var(--pink-glow);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(244, 114, 182, 0.35);
+}
+
+/* ── Celebrate Button ── */
+.celebrate-btn {
+  background: linear-gradient(135deg, #f472b6 0%, #f9a8d4 35%, #2d6a4f 75%, #52b788 100%);
+  border: none;
+  border-radius: 50px;
+  padding: 1.15rem 3.2rem;
+  font-size: 1.05rem;
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  color: #070c09;
+  cursor: none;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 12px 40px rgba(244, 114, 182, 0.5), 0 0 25px rgba(116, 198, 157, 0.35);
+}
+.celebrate-btn:hover {
+  transform: scale(1.04);
+  box-shadow: 0 16px 50px rgba(244, 114, 182, 0.7), 0 0 35px rgba(116, 198, 157, 0.5);
+}
+
+/* ── Music Toggle ── */
+.music-toggle {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 1000;
+  background: rgba(16, 26, 20, 0.85);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(249, 168, 212, 0.4);
+  border-radius: 50px;
+  padding: 0.55rem 1.25rem;
+  color: #fbcfe8;
+  cursor: none;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+.music-toggle:hover {
+  background: rgba(249, 168, 212, 0.2);
+  border-color: var(--pink-soft);
+  color: #fff;
+}
+
+/* ── Animations ── */
+@keyframes bounceY {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-7px); }
+}
+
+@keyframes leafSway {
+  0%, 100% { transform: rotate(0deg); }
+  50%      { transform: rotate(2.5deg); }
+}
+
+@keyframes petalDrift {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes cloudDrift {
+  0%   { transform: translateX(0); }
+  50%  { transform: translateX(18px); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes badgeIn {
+  from { opacity: 0; transform: scale(0.65) rotate(-3deg); }
+  to   { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+/* ── Mobile Responsive Polish ── */
+@media (max-width: 768px) {
+  .music-toggle {
+    top: 1rem;
+    right: 1rem;
+    padding: 0.45rem 0.95rem;
+    font-size: 0.7rem;
+  }
+}
+
+@media (pointer: coarse) {
+  body { cursor: auto; }
+  .cursor-ring, .cursor-dot, .cursor-trail { display: none !important; }
+  .interlude-btn, .celebrate-btn, .music-toggle { cursor: pointer; }
+}
